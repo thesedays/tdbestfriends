@@ -12,6 +12,7 @@
 		<p>Login status: <span id="login-status">...</span></p>
 		<p><a href="#" id="btn-get-best-friends">Get best friends</a></p>
 		<p id="results"></p>
+		<p><a href="https://github.com/thesedays/tdbestfriends">Source code on GitHub</a></p>
 
 		<script src="//connect.facebook.net/en_US/all.js"></script>
 		<script src="tdbestfriends.js"></script>
@@ -37,8 +38,8 @@
 				// Set options for TDBestFriends
 				TDBestFriends.setFB(FB);
 				TDBestFriends.extendOptions({
-					numToReturn   : 50,
-					storiesToLoad : 50
+					numToReturn   : 10,
+					storiesToLoad : 25
 				});
 
 				// If you have already loaded the friends, pass them in to avoid another API call:
