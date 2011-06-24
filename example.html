@@ -11,13 +11,15 @@
 		<div id="fb-root"></div>
 		<p>Login status: <span id="login-status">...</span></p>
 		<p><a href="#" id="btn-get-best-friends">Get best friends</a></p>
-
+		<p id="results"></p>
 
 		<script src="//connect.facebook.net/en_US/all.js"></script>
 		<script src="tdbestfriends.js"></script>
 		<script>
 			(function(FB) {
-				var button = document.getElementById("btn-get-best-friends"), getBestFriends, bestFriends;
+				var getBestFriends, bestFriends,
+					button = document.getElementById("btn-get-best-friends"),
+					results = document.getElementById("results");
 
 				// Initialise Facebook SDK
 				FB.init({ appId: "164829496916322", status: true, cookie: true, xfbml: false });
@@ -35,7 +37,7 @@
 				// Set options for TDBestFriends
 				TDBestFriends.setFB(FB);
 				TDBestFriends.extendOptions({
-					numToReturn   : 10,
+					numToReturn   : 50,
 					storiesToLoad : 50
 				});
 
@@ -46,8 +48,12 @@
 				getBestFriends = function(e) {
 					e.preventDefault();
 					TDBestFriends.getBestFriends(function(result) {
+						var i, len, html = '';
 						bestFriends = result;
-						console.log(bestFriends);
+						for (i = 0, len = bestFriends.length; i < len; i += 1) {
+							html += (i + 1).toString() + '. ' + bestFriends[i].name + ' (' + bestFriends[i].id + ')<br>';
+						}
+						results.innerHTML = html;
 					});
 				};
 				if (button.addEventListener) {
