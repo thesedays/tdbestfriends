@@ -135,7 +135,7 @@ var TDBestFriends = (function() {
 			if (response.data) {
 				feed = feed.concat(response.data);
 				pagesLoaded += 1;
-				if (pagesLoaded === options.pagesToLoad) {
+				if (pagesLoaded === options.pagesToLoad || response.data.length < options.itemsPerPage) {
 					// Determine the best friends
 					return calculateBestFriends(callback);
 				} else {
