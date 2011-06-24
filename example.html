@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>These Days Best Friends</title>
+		<style>
+			body { font-family: sans-serif; color: #333; }
+		</style>
+	</head>
+	<body>
+		<div id="fb-root"></div>
+		<p>Login status: <span id="login-status">...</span></p>
+		<p><a href="#" id="btn-get-best-friends">Get best friends</a></p>
+
+
+		<script src="//connect.facebook.net/en_US/all.js"></script>
+		<script src="tdbestfriends.js"></script>
+		<script>
+			(function(FB) {
+				var button = document.getElementById("btn-get-best-friends"), getBestFriends, bestFriends;
+
+				// Initialise Facebook SDK
+				FB.init({ appId: "164829496916322", status: true, cookie: true, xfbml: false });
+				FB.getLoginStatus(function(response) {
+					var status = document.getElementById("login-status");
+					if (response.session) {
+						status.innerHTML = "Logged in";
+					} else {
+						status.innerHTML = "Not logged in";
+					}
+				});
+
+				// Set options for TDBestFriends
+				TDBestFriends.setFB(FB);
+				TDBestFriends.setNumToReturn(10);
+
+				// Get the best friends when the link is clicked
+				getBestFriends = function(e) {
+					e.preventDefault();
+					TDBestFriends.getBestFriends(function(result) {
+						bestFriends = result;
+						console.log(bestFriends);
+					});
+				};
+				if (button.addEventListener) {
+					button.addEventListener("click", getBestFriends, false);
+				} else if (button.attachEvent) {
+					button.attachEvent("onclick", getBestFriends);
+				}
+			}(FB));
+		</script>
+	</body>
+</html>
