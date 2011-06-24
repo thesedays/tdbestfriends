@@ -12,12 +12,14 @@ var TDBestFriends = (function() {
 
 	// Private variables
 	FB, friends, uid, perms, options = {
-		numToReturn   : 10,
-		storiesToLoad : 50
-	},
+		numToReturn    : 10,
+		storiesToLoad  : 50,
+		pointsWallPost : 2,
+		pointsComment  : 1
+	}, feed,
 
 	// Private functions
-	getLoginStatusAndLogin, loadFriends, log;
+	getLoginStatusAndLogin, loadFriends, loadFeed, calculateBestFriends, log;
 
 	/////////////////////////////////////////
 	// PUBLIC SETTERS
@@ -84,7 +86,13 @@ var TDBestFriends = (function() {
 			return null;
 		}
 
-		callback.apply(this, [friends.slice(0, options.numToReturn)]);
+		// If the feed is not set, load it
+		if (!feed) {
+			return loadFeed(getBestFriends, [callback]);
+		}
+
+		// Determine the best friends
+		return calculateBestFriends(callback);
 	};
 
 	/////////////////////////////////////////
@@ -122,6 +130,32 @@ var TDBestFriends = (function() {
 			}
 			if (typeof callback === "function") { callback.apply(this, callbackArgs); }
 		});
+	};
+
+	// Load the feed then call the callback
+	loadFeed = function(callback, callbackArgs) {
+		log("loadFeed()");
+		FB.api("/me/feed", function(response) {
+			if (response.data) {
+				feed = response.data;
+			}
+			if (typeof callback === "function") { callback.apply(this, callbackArgs); }
+		});
+	};
+
+	// Read the news feed and figure out who the best friends are
+	calculateBestFriends = function(callback) {
+		var points = [], bestFriends = [], i, iLen, post;
+
+		for (i = 0, iLen = feed.length; i < iLen; i += 1) {
+			post = feed[i];
+			if (post.from) {
+				points[post.from.id] = (points[post.from.id] || 0) + options.pointsWallPost;
+				log("Incremented points for " + post.from.name + " to " + points[post.from.id]);
+			}
+		}
+
+		callback.apply(this, [friends.slice(0, options.numToReturn)]);
 	};
 
 	log = function() {
