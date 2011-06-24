@@ -25,6 +25,8 @@
 					var status = document.getElementById("login-status");
 					if (response.session) {
 						status.innerHTML = "Logged in";
+						TDBestFriends.setUid(response.session.uid);
+						TDBestFriends.setPerms(response.perms);
 					} else {
 						status.innerHTML = "Not logged in";
 					}
@@ -32,7 +34,13 @@
 
 				// Set options for TDBestFriends
 				TDBestFriends.setFB(FB);
-				TDBestFriends.setNumToReturn(10);
+				TDBestFriends.extendOptions({
+					numToReturn   : 10,
+					storiesToLoad : 50
+				});
+
+				// If you have already loaded the friends, pass them in to avoid another API call:
+				//TDBestFriends.setFriends(friends);
 
 				// Get the best friends when the link is clicked
 				getBestFriends = function(e) {

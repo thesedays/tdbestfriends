@@ -5,13 +5,16 @@
 var TDBestFriends = (function() {
 
 	// Public setters
-	var setFB, setFriends, setUid, setPerms, setNumToReturn,
+	var setFB, setFriends, setUid, setPerms, extendOptions,
 
 	// Public functions
 	getBestFriends,
 
 	// Private variables
-	FB, friends, uid, perms, numToReturn = 10,
+	FB, friends, uid, perms, options = {
+		numToReturn   : 10,
+		storiesToLoad : 50
+	},
 
 	// Private functions
 	getLoginStatusAndLogin, loadFriends, log;
@@ -40,8 +43,14 @@ var TDBestFriends = (function() {
 		perms = input;
 	};
 
-	setNumToReturn = function(input) {
-		numToReturn = input;
+	// Override the current options
+	extendOptions = function(input) {
+		var i;
+		for (i in input) {
+			if (input.hasOwnProperty(i)) {
+				options[i] = input[i];
+			}
+		}
 	};
 
 	/////////////////////////////////////////
@@ -75,7 +84,7 @@ var TDBestFriends = (function() {
 			return null;
 		}
 
-		callback.apply(this, [friends.slice(0, numToReturn)]);
+		callback.apply(this, [friends.slice(0, options.numToReturn)]);
 	};
 
 	/////////////////////////////////////////
@@ -126,7 +135,7 @@ var TDBestFriends = (function() {
 		setFriends     : setFriends,
 		setUid         : setUid,
 		setPerms       : setPerms,
-		setNumToReturn : setNumToReturn,
+		extendOptions  : extendOptions,
 		getBestFriends : getBestFriends
 	};
 
