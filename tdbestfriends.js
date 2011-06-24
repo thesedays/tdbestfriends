@@ -13,10 +13,11 @@ var TDBestFriends = (function() {
 	// Private variables
 	FB, friends, uid, perms, options = {
 		numToReturn    : 10,
-		storiesToLoad  : 50,
+		itemsPerPage   : 25,
+		pagesToLoad    : 1,
 		pointsWallPost : 2,
 		pointsComment  : 1
-	}, feed,
+	}, feed = [], pagesLoaded = 0,
 
 	// Private functions
 	getLoginStatusAndLogin, loadFriends, loadFeed, calculateBestFriends, log;
@@ -86,13 +87,8 @@ var TDBestFriends = (function() {
 			return null;
 		}
 
-		// If the feed is not set, load it
-		if (!feed) {
-			return loadFeed(getBestFriends, [callback]);
-		}
-
-		// Determine the best friends
-		return calculateBestFriends(callback);
+		// Load the feed
+		return loadFeed(callback);
 	};
 
 	/////////////////////////////////////////
@@ -133,13 +129,19 @@ var TDBestFriends = (function() {
 	};
 
 	// Load the feed then call the callback
-	loadFeed = function(callback, callbackArgs) {
+	loadFeed = function(callback) {
 		log("loadFeed()");
-		FB.api("/me/feed", function(response) {
+		FB.api("/me/feed?limit=" + options.itemsPerPage.toString() + "&offset=" + (pagesLoaded * options.itemsPerPage).toString(), function(response) {
 			if (response.data) {
-				feed = response.data;
+				feed = feed.concat(response.data);
+				pagesLoaded += 1;
+				if (pagesLoaded === options.pagesToLoad) {
+					// Determine the best friends
+					return calculateBestFriends(callback);
+				} else {
+					loadFeed(callback);
+				}
 			}
-			if (typeof callback === "function") { callback.apply(this, callbackArgs); }
 		});
 	};
 
